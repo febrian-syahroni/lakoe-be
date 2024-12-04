@@ -45,24 +45,24 @@ model Profile {
   userId Int   @unique
   user   User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  Toko   Toko?
+  store Store?
 
   @@map("profile")
 }
 
-model Toko {
+model Store {
   id          Int    @id @default(autoincrement())
-  nama_toko   String
-  slogan_toko String
+  name  String
+  slogan String
   description String
   img         String
 
-  userId  Int     @unique
-  profile Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profileId  Int     @unique
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
   location Location[]
 
-  @@map("toko")
+  @@map("store")
 }
 
 model Location {
@@ -75,8 +75,8 @@ model Location {
   lng              Float
   is_main_location String
 
-  tokoId Int  
-  toko   Toko @relation(fields: [tokoId], references: [id], onDelete: Cascade)
+  storeId Int  
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
 model Product {
