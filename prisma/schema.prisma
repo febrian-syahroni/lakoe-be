@@ -9,54 +9,137 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
+
 model User {
-  id        Int    @id @default(autoincrement())
-  username     String
-  email     String  @unique
-  password  String 
+  id        Int      @id @default(autoincrement())
+  username  String?
+  email     String?  @unique
+  phone     String
+  password  String
+  role      RoleEnum @default(SELLER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  toko Toko?
-  
+  profile Profile?
+
   @@map("user")
 }
-model Toko {
-  id        Int    @id @default(autoincrement())
-  nama_toko  String
-  alamat    String
-  slogan String
-  desc String
-  img String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
 
-  userId Int @unique
-  user  User @relation(fields: [userId],references: [id], onDelete: Cascade)
-  
-  cabang Cabang[]
+enum RoleEnum {
+  ADMIN
+  SELLER
 
-  @@map("toko")
+  @@map("role_enum")
 }
-model Cabang {
-  id        Int    @id @default(autoincrement())
-  nama_toko_cabang  String
-  alamat    String
-  kota String
-  kode_pos String
-  pin_point String
+
+model Profile {
+  id        Int      @id @default(autoincrement())
+  fullname  String?
+  nameStore String? @default("")
+  slogan    String? @default("")
+  desc      String? @default("")
+  img       String? @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tokoId Int
-  toko Toko @relation(fields: [tokoId],references: [id], onDelete: Cascade)
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("cabang")
+  location Location[]
+
+  @@map("profile")
 }
 
+model Location {
+  id               Int    @id @default(autoincrement())
+  name             String
+  address          String
+  postal_code      String
+  city_district    String
+  lat              Float? 
+  lng              Float? 
+  is_main_location String
 
+  profileId Int
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+model Product {
+  id            Int     @id @default(autoincrement())
+  nama_product  String
+  description   String
+  url String
+  img String[]
+  is_active     Boolean @default(false)
+  minumum_order String
+  size          String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  variant variant[]
+
+  @@map("product")
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  child    Category? @relation("parentCategory")
+  parentId Int       @unique
+  parent   Category? @relation("parentCategory", fields: [parentId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("category")
+}
+
+model variant {
+  id        Int     @id @default(autoincrement())
+  name      String
+  is_active Boolean
+
+  product_id Int
+  product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+
+  variant_options variant_options[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("variant")
+}
+
+model variant_options {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  variant_id Int
+  variant    variant @relation(fields: [variant_id], references: [id], onDelete: Cascade)
+
+  variant_options_values variant_options_values[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model variant_options_values {
+  id        Int     @id @default(autoincrement())
+  sku       String
+  weight    String
+  stock     String
+  price     String
+  is_active Boolean
+
+  variant_options_id Int
+  variant_options    variant_options @relation(fields: [variant_options_id], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
