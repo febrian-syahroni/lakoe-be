@@ -15,12 +15,12 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  username String?
-  email    String? @unique
-  phone    String
-  password String
-  role RoleEnum @default(SELLER)
+  id        Int      @id @default(autoincrement())
+  username  String?
+  email     String?  @unique
+  phone     String
+  password  String
+  role      RoleEnum @default(SELLER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -37,32 +37,21 @@ enum RoleEnum {
 }
 
 model Profile {
-  id Int @id @default(autoincrement())
-  fullname String?
+  id        Int      @id @default(autoincrement())
+  fullname  String?
+  nameStore String? @default("")
+  slogan    String? @default("")
+  desc      String? @default("")
+  img       String? @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  userId Int   @unique
-  user   User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  store Store?
-
-  @@map("profile")
-}
-
-model Store {
-  id          Int    @id @default(autoincrement())
-  name  String
-  slogan String
-  description String
-  img         String
-
-  profileId  Int     @unique
-  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   location Location[]
 
-  @@map("store")
+  @@map("profile")
 }
 
 model Location {
@@ -71,18 +60,20 @@ model Location {
   address          String
   postal_code      String
   city_district    String
-  lat              Float
-  lng              Float
+  lat              Float? 
+  lng              Float? 
   is_main_location String
 
-  storeId Int  
-  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  profileId Int
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 }
 
 model Product {
   id            Int     @id @default(autoincrement())
   nama_product  String
   description   String
+  url String
+  img String[]
   is_active     Boolean @default(false)
   minumum_order String
   size          String
