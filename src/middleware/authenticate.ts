@@ -1,29 +1,34 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
-export const aunthenticate = (
+export const authenticate = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const auth = req.headers.authorization;
-
+    console.log(">> auth",auth);
+    
     if (!auth) {
       res.status(401).json({ message: "Unauthorized" });
       return;
     }
-    const token = auth.split("")[1];
 
+// "abcde"
+
+
+    const token = auth.split(" ")[1];
+    
     if (!token) {
       res.status(401).json({ message: "Unauthorized" });
       return;
     }
 
-    const decode = jwt.verify(token, process.env.JWT_SECRET || "LAKOE");
+    const decode = jwt.verify(token, process.env.JWT_SECRET || "Lakoe disini");
 
     if (!decode) {
-      res.status(401).json({ message: "unauthorized" });
+      res.status(401).json({ message: "Unauthorized" });
       return;
     }
     res.locals.user = decode;

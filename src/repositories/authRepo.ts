@@ -19,7 +19,7 @@ export const createUser = async (body: registerDTO) => {
       password: body.password,
       profile: {
         create:{
-          fullname: body.fullname,
+          fullname: body.fullname ?? '',
         }
       },
     },

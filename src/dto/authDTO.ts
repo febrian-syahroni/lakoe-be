@@ -7,7 +7,7 @@ export interface registerDTO {
   phone: string;
   password: string;
   role: RoleEnum;
-  fullname: string;
+  fullname?: string;
 }
 
 export interface loginDTO {
